@@ -1,59 +1,159 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Oggi la tua anima è...</title>
   <style>
-    body { 
-      font-family: "Helvetica", sans-serif; 
-      background: #020202; 
-      text-align: center; 
-      padding: 50px;
+    :root{
+      --bg:#020202; --fg:#ffffff; --muted:#cfcfcf;
+      --ferita:#e57373; --attesa:#9575cd; --tempesta:#81c784; --stanca:#64b5f6;
     }
-    h1 { color: #ffffff; }
-    button { 
-      margin: 15px; 
-      padding: 15px 25px; 
-      border: none; 
-      border-radius: 12px; 
-      font-size: 18px; 
-      cursor: pointer; 
-      transition: 0.3s;
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, "Helvetica", Arial, sans-serif;
+      display: grid;
+      place-items: center;          /* centra verticale + orizzontale */
+      padding: 24px;
     }
-    button:hover { transform: scale(1.1); }
-    .ferita { background-color: #e57373; color: white; }
-    .attesa { background-color: #9575cd; color: white; }
-    .tempesta { background-color: #81c784; color: white; }
-    .stanca { background-color: #64b5f6; color: white; }
-    #messaggio { margin-top: 30px; font-size: 20px; color: #ffffff; }
+    .app {
+      width: 100%;
+      max-width: 680px;
+      text-align: center;
+    }
+    h1 { margin: 0 0 24px; font-weight: 700; }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 14px;
+      justify-items: center;
+      margin-bottom: 24px;
+    }
+    button {
+      width: 100%;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      transition: transform .15s ease, opacity .2s ease, box-shadow .2s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+    }
+    button:hover { transform: translateY(-2px); }
+    .ferita   { background: var(--ferita); }
+    .attesa   { background: var(--attesa); }
+    .tempesta { background: var(--tempesta); }
+    .stanca   { background: var(--stanca); }
+
+    .hidden { display: none !important; }
+
+    .card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 22px;
+      text-align: left;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      animation: fadeIn .25s ease-out both, pop .25s ease-out both;
+    }
+    .card h2 { margin: 0 0 6px; font-size: 20px; opacity:.9; }
+    .card p  { margin: 0; font-size: 18px; color: var(--muted); line-height: 1.45; }
+
+    .actions { margin-top: 18px; text-align: center; }
+    .ghost {
+      background: transparent; border: 1px solid rgba(255,255,255,.25);
+      color: var(--fg); padding: 10px 16px; border-radius: 12px;
+    }
+    .ghost:hover { background: rgba(255,255,255,.08); }
+
+    @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+    @keyframes pop { from {transform: scale(.98)} to {transform: scale(1)} }
+
+    @media (max-width: 480px) {
+      .buttons { grid-template-columns: 1fr; }
+      button { font-size: 17px; }
+    }
   </style>
 </head>
 <body>
-  <h1>Oggi la tua anima è...</h1>
-  
-  <button class="ferita" onclick="risposta('ferita')">Ferita</button>
-  <button class="attesa" onclick="risposta('attesa')">In attesa</button>
-  <button class="tempesta" onclick="risposta('tempesta')">In tempesta</button>
-  <button class="stanca" onclick="risposta('stanca')">Stanca</button>
+  <main class="app">
+    <h1>Oggi la tua anima è...</h1>
 
-  <p id="messaggio"></p>
+    <div id="scelte" class="buttons">
+      <button class="ferita"   onclick="risposta('ferita')">Ferita</button>
+      <button class="attesa"   onclick="risposta('attesa')">In attesa</button>
+      <button class="tempesta" onclick="risposta('tempesta')">In tempesta</button>
+      <button class="stanca"   onclick="risposta('stanca')">Stanca</button>
+    </div>
+
+    <section id="output" class="hidden"></section>
+
+    <div id="again" class="actions hidden">
+      <button class="ghost" onclick="resetGioco()">Ricomincia</button>
+    </div>
+  </main>
 
   <script>
-    function risposta(scelta) {
-      let messaggio = "";
-      if (scelta === "ferita") {
-        messaggio = "La ferita emotiva segnala un bisogno di protezione e cura. Riconoscerla è il primo passo per iniziare un processo di guarigione.";
-      } else if (scelta === "attesa") {
-        messaggio = "L’attesa può generare ansia e frustrazione, ma è anche uno spazio di elaborazione. Concediti tempo: stai preparando nuove risorse.";
-      } else if (scelta === "tempesta") {
-        messaggio = "La tempesta interiore è il segnale di un conflitto emotivo attivo. Fermati, respira e prova a nominare le emozioni che senti.";
-      } else if (scelta === "stanca") {
-        messaggio = "La stanchezza è un campanello d’allarme: il corpo e la mente chiedono pausa. Ascoltarla significa prevenire un sovraccarico.";
-      }
-      document.getElementById("messaggio").innerText = messaggio;
+    const output = document.getElementById('output');
+    const scelte = document.getElementById('scelte');
+    const again  = document.getElementById('again');
 
-      // Qui puoi aggiungere collegamento a Google Sheets o server
-      console.log("Risposta scelta:", scelta);
+    const messaggi = {
+      ferita: {
+        titolo: "Indicatore: Ferita emotiva",
+        testo:  "La ferita segnala un bisogno di protezione e cura. Riconoscerla è il primo passo per avviare il processo di guarigione."
+      },
+      attesa: {
+        titolo: "Indicatore: Stato d’attesa",
+        testo:  "L’attesa può generare ansia, ma è anche spazio di elaborazione. Concediti tempo: stai organizzando risorse interne."
+      },
+      tempesta: {
+        titolo: "Indicatore: Conflitto attivo",
+        testo:  "La tempesta interiore indica emozioni in conflitto. Fermati, respira e prova a nominarle per ridurre l’attivazione."
+      },
+      stanca: {
+        titolo: "Indicatore: Sovraccarico",
+        testo:  "La stanchezza è un campanello d’allarme. Pausa e recupero prevengono ricadute: ascoltala senza giudizio."
+      }
+    };
+
+    function risposta(key) {
+      // nasconde i bottoni
+      scelte.classList.add('hidden');
+
+      // mostra la card con il messaggio
+      const { titolo, testo } = messaggi[key] || {};
+      output.innerHTML = `
+        <div class="card">
+          <h2>${titolo || "Stato rilevato"}</h2>
+          <p>${testo || "Nessun testo disponibile."}</p>
+        </div>
+      `;
+      output.classList.remove('hidden');
+      again.classList.remove('hidden');
+
+      // LOG / punto di integrazione per monitoraggio
+      console.log("Risposta scelta:", key);
+      // Esempio: invio a un endpoint/server o Apps Script
+      // fetch("https://TUO_ENDPOINT/salva", {
+      //   method: "POST",
+      //   headers: {"Content-Type": "application/json"},
+      //   body: JSON.stringify({ stato: key, ts: new Date().toISOString() })
+      // });
+    }
+
+    function resetGioco() {
+      output.classList.add('hidden');
+      again.classList.add('hidden');
+      output.innerHTML = "";
+      scelte.classList.remove('hidden');
     }
   </script>
 </body>
