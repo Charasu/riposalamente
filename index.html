@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Oggi la tua anima è...</title>
+  <style>
+    body { 
+      font-family: "Helvetica", sans-serif; 
+      background: #020202; 
+      text-align: center; 
+      padding: 50px;
+    }
+    h1 { color: #ffffff; }
+    button { 
+      margin: 15px; 
+      padding: 15px 25px; 
+      border: none; 
+      border-radius: 12px; 
+      font-size: 18px; 
+      cursor: pointer; 
+      transition: 0.3s;
+    }
+    button:hover { transform: scale(1.1); }
+    .ferita { background-color: #e57373; color: white; }
+    .attesa { background-color: #9575cd; color: white; }
+    .tempesta { background-color: #81c784; color: white; }
+    .stanca { background-color: #64b5f6; color: white; }
+    #messaggio { margin-top: 30px; font-size: 20px; color: #ffffff; }
+  </style>
+</head>
+<body>
+  <h1>Oggi la tua anima è...</h1>
+  
+  <button class="ferita" onclick="risposta('ferita')">Ferita</button>
+  <button class="attesa" onclick="risposta('attesa')">In attesa</button>
+  <button class="tempesta" onclick="risposta('tempesta')">In tempesta</button>
+  <button class="stanca" onclick="risposta('stanca')">Stanca</button>
+
+  <p id="messaggio"></p>
+
+  <script>
+    function risposta(scelta) {
+      let messaggio = "";
+      if (scelta === "ferita") {
+        messaggio = "La ferita emotiva segnala un bisogno di protezione e cura. Riconoscerla è il primo passo per iniziare un processo di guarigione.";
+      } else if (scelta === "attesa") {
+        messaggio = "L’attesa può generare ansia e frustrazione, ma è anche uno spazio di elaborazione. Concediti tempo: stai preparando nuove risorse.";
+      } else if (scelta === "tempesta") {
+        messaggio = "La tempesta interiore è il segnale di un conflitto emotivo attivo. Fermati, respira e prova a nominare le emozioni che senti.";
+      } else if (scelta === "stanca") {
+        messaggio = "La stanchezza è un campanello d’allarme: il corpo e la mente chiedono pausa. Ascoltarla significa prevenire un sovraccarico.";
+      }
+      document.getElementById("messaggio").innerText = messaggio;
+
+      // Qui puoi aggiungere collegamento a Google Sheets o server
+      console.log("Risposta scelta:", scelta);
+    }
+  </script>
+</body>
+</html>
